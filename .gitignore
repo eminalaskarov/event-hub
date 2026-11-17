@@ -1,4 +1,19 @@
+# Gizli açarlar
 .env
-frontend/.env
+.env.*
+!.env.example
+
+# Asılılıqlar və build nəticələri
 node_modules/
+frontend/dist/
 __pycache__/
+*.pyc
+.venv/
+
+# Redaktor və sistem faylları
+.vscode/
+Thumbs.db
+.DS_Store
+
+# Baza backup-ları
+*.dump

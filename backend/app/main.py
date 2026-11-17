@@ -20,14 +20,24 @@ from app.seat_realtime import SeatRealtimeHub, expire_holds_loop
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.db_pool = await create_db_pool()
     app.state.http_client = httpx.AsyncClient(timeout=httpx.Timeout(5.0))
-    app.state.redis = redis.Redis(
-        host=settings.redis_host,
-        port=settings.redis_port,
-        password=settings.redis_password.get_secret_value(),
-        decode_responses=True,
-        socket_connect_timeout=5,
-        socket_keepalive=True,
-    )
+    if settings.redis_url:
+        app.state.redis = redis.Redis.from_url(
+            settings.redis_url.get_secret_value(),
+            decode_responses=True,
+            socket_connect_timeout=5,
+            socket_keepalive=True,
+        )
+    else:
+        app.state.redis = redis.Redis(
+            host=settings.redis_host,
+            port=settings.redis_port,
+            password=(
+                settings.redis_password.get_secret_value() if settings.redis_password else None
+            ),
+            decode_responses=True,
+            socket_connect_timeout=5,
+            socket_keepalive=True,
+        )
     app.state.realtime_hub = SeatRealtimeHub(app.state.redis)
 
     background_tasks = [

@@ -6,6 +6,14 @@ from app.config import settings
 
 
 async def create_db_pool() -> asyncpg.Pool:
+    if settings.database_url:
+        return await asyncpg.create_pool(
+            dsn=settings.database_url.get_secret_value(),
+            min_size=settings.db_pool_min_size,
+            max_size=settings.db_pool_max_size,
+            command_timeout=30,
+        )
+
     return await asyncpg.create_pool(
         host=settings.postgres_host,
         port=settings.postgres_port,

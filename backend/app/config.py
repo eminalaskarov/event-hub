@@ -16,21 +16,24 @@ class Settings(BaseSettings):
 
     api_prefix: str = "/api/v1"
 
-    postgres_host: str
+    
+    database_url: SecretStr | None = None
+    postgres_host: str = "db"
     postgres_port: int = 5432
-    postgres_db: str
-    postgres_user: str
-    postgres_password: SecretStr
-    db_pool_min_size: int = 2
+    postgres_db: str = "eventhub"
+    postgres_user: str = "eventhub"
+    postgres_password: SecretStr = SecretStr("")
+    db_pool_min_size: int = 1
     db_pool_max_size: int = 10
 
     jwt_secret_key: SecretStr = Field(min_length=32)
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = Field(default=60, gt=0)
 
+    redis_url: SecretStr | None = None
     redis_host: str = "redis"
     redis_port: int = 6379
-    redis_password: SecretStr
+    redis_password: SecretStr | None = None
 
     seat_hold_ttl_seconds: int = Field(default=600, ge=60, le=1800)
     hold_sweep_interval_seconds: float = Field(default=5, gt=0)
